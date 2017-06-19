@@ -1,14 +1,13 @@
-//Manual tests:
+//Manual Tests
 
-var string = JSON.stringify("john")
-var boolean = JSON.stringify(false)
-var nullValue = JSON.stringify(null)
-var number = JSON.stringify(483785)
-var array = JSON.stringify([12,"john", true, "Ke vin", false, 3])
-var object = JSON.stringify({a:1, b:"john", c:"Ke vin", d:isSyntax})
+//passed -- var string = JSON.stringify("john")
+//passed -- var boolean = JSON.stringify(false)
+//passed -- var nullValue = JSON.stringify(null)
+//passed -- var number = JSON.stringify(483785)
+//passed -- var array = JSON.stringify([[1,"kevin",[1,2,3]],[44,34343434,true]])
+//failed -- var object = JSON.stringify({a:1, b:[1,2,3,4], c:"Ke vin", d:isSyntax})
 
-
-//NEED TO account for Array of objects, object of arrays, etc
+//only objects remaining
 var parseJSON = function(json) {
   var code = json.charCodeAt()
   //string
@@ -34,30 +33,61 @@ var parseJSON = function(json) {
   //array
   if(code === 91) {
     var array = json.split('');
+    array.shift();
+    array.pop();
     var newArray = [];
-    for(var i=0; i<array.length-1; i++) {
-      var value = array[i];
-      var previous = array[i-1];
-      var next = array[i+1];
-      if(isSyntax(value) === false) {
-        if(isSyntax(previous)===true) {
-          newArray.unshift(value);
+    var startSlice = 0;
+    var count = 0;
+    for(var i=0; i<array.length; i++) {
+      var n = array[i].charCodeAt();
+      if(n === 91) {
+        newArray.push(array[i]);
+        for(var x=i+1; x<array.length; x++) {
+          // if "[ " => getting far from equal
+          if (array[x].charCodeAt() === 91) {
+            newArray[newArray.length-1] += array[x];
+            count++;
+          }
+          // if "]" AND not 0 => getting close to equal
+          else if (array[x].charCodeAt() === 93 && count !== 0) {
+            newArray[newArray.length-1] += array[x];
+            count--;
+          }
+          //if "]" AND 0 => ends, change i, end x-loop
+          else if (array[x].charCodeAt() === 93 && count === 0) {
+            newArray[newArray.length-1] += array[x];
+            i = x;
+            x = array.length;
+          }
+          //else, just add
+          else if (array[x].charCodeAt() !== 93) {
+            newArray[newArray.length-1] += array[x];
+          }
         }
-        else if(isSyntax(previous) === false) {
-          newArray[0] += (value);
+      }
+      else {
+        if (n !== 44 && count === 0) {
+          newArray.push(array[i]);
+          count = 1;
+        }
+        else if(n !== 44 && count === 1) {
+          newArray[newArray.length-1] += array[i];
+        }
+        else if(n === 44) {
+          newArray[newArray.length-1] = parseJSON(newArray[newArray.length-1]);
+          count = 0;
         }
       }
     }
-    return newArray.map(function(x) {
-      return parseJSON(x)
-    }).reverse();
+    newArray[newArray.length-1] = parseJSON(newArray[newArray.length-1]);
+    return newArray;
   }
   //object
   if(code === 123) {
     var array = json.split('');
     var newArray = [];
     var object = {};
-    for(var i=0; i<array.length-1; i++) {
+    for(var i=1; i<array.length-1; i++) {
       var value = array[i];
       var previous = array[i-1];
       var next = array[i+1];
@@ -78,12 +108,13 @@ var parseJSON = function(json) {
     }
     return object;
   }
+  //undefined - change to else?
   else {
     return undefined;
   }
 };
 
-//checks array/object syntax
+//checks object syntax, delete this if object is not used
 var isSyntax = function(string) {
   var n = string.charCodeAt();
   if(n === 91 || n === 44 || n === 93 || n === 123 || n === 125 || n === 58) {
