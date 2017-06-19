@@ -1,13 +1,14 @@
 //Manual tests:
-/*
+
 var string = JSON.stringify("john")
 var boolean = JSON.stringify(false)
 var nullValue = JSON.stringify(null)
 var number = JSON.stringify(483785)
 var array = JSON.stringify([12,"john", true, "Ke vin", false, 3])
 var object = JSON.stringify({a:1, b:"john", c:"Ke vin", d:isSyntax})
-*/
 
+
+//NEED TO account for Array of objects, object of arrays, etc
 var parseJSON = function(json) {
   var code = json.charCodeAt()
   //string
@@ -77,7 +78,6 @@ var parseJSON = function(json) {
     }
     return object;
   }
-  //undefined - change to else?
   else {
     return undefined;
   }
