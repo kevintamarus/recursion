@@ -4,7 +4,19 @@
 // };
 
 // But instead we're going to implement it from scratch:
-var getElementsByClassName = function(className
-) {
-  // your code here
+var getElementsByClassName = function(className) {
+  var documentBody = document.body;
+  var finalArray = [];
+  var search = function(node) {
+    if(node.classList.contains(className)) {
+      finalArray.push(node);
+    }
+    node = node.firstChild;
+    while(node === true) {
+      search(node);
+      node = node.nextSibling;
+    }
+  }
+  search(documentBody);
+  return finalArray;
 };
