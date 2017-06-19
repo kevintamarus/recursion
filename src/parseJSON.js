@@ -8,11 +8,11 @@
 //passed for array of arrays, failed for array of objects
 //var array = JSON.stringify([[1,"kevin",[1,2,3]],[44,34343434,true]])
 
-//passed for simple objects, failed for object of arrays, object of objects
-//var object = JSON.stringify({a:1, b:[1,2,3,4], c:"Ke vin", d:isSyntax})
+//passed for simple objects, failed for object of arrays and object of objects
+//var object = JSON.stringify({a:{x:1,y:2}, b:2, c:"Ke vin", d:"john"});
 
 
-//only objects remaining
+//only objects section need to be fixed
 var parseJSON = function(json) {
   //using the first charCode to determine what type of string json is
   var code = json.charCodeAt()
@@ -95,44 +95,40 @@ var parseJSON = function(json) {
   }
   //object test - code 123 is '{'
   if(code === 123) {
-    var array = json.split('');
-    var newArray = [];
+    var string = json.slice(1, json.length-1) + ',';
     var object = {};
-    for(var i=1; i<array.length-1; i++) {
-      var value = array[i];
-      var previous = array[i-1];
-      var next = array[i+1];
-      if(isSyntax(value) === false) {
-        if(isSyntax(previous)===true) {
-          newArray.unshift(value);
-        }
-        else if(isSyntax(previous) === false) {
-          newArray[0] += (value);
-        }
+    var key = '';
+    var value = '';
+    var isKey = 'yes';
+    for(var i=0; i<string.length; i++) {
+      var n = string[i].charCodeAt();
+      var current = string[i];
+      //base case for objects
+      //before the ":"
+      if (n !== 58 && isKey === 'yes') {
+        key += current;
       }
-    }
-    var objectArray = newArray.map(function(x) {
-      return parseJSON(x)
-    }).reverse();
-    for(var i=0; i<objectArray.length; i=i+2) {
-      object[objectArray[i]] = objectArray[i+1];
+      else if (n === 58 && isKey === 'yes') {
+        key = parseJSON(key);
+        object[key] = 0;
+        isKey = 'no';
+      }
+      //after the ":", before the ","
+      else if (n !== 44 && isKey ==='no') {
+        value += current;
+      }
+      else if (n === 44 && isKey ==='no') {
+        value = parseJSON(value);
+        object[key] = value;
+        key = '';
+        value = '';
+        isKey = 'yes';
+      }
     }
     return object;
   }
   //undefined
   else {
     return undefined;
-  }
-};
-
-
-//checks object syntax, delete this if object is not used
-var isSyntax = function(string) {
-  var n = string.charCodeAt();
-  if(n === 91 || n === 44 || n === 93 || n === 123 || n === 125 || n === 58) {
-    return true;
-  }
-  else{
-    return false;
   }
 }; 
