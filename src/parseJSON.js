@@ -5,17 +5,12 @@
 //passed -- var nullValue = JSON.stringify(null)
 //passed -- var number = JSON.stringify(483785)
 
-//passed for array of arrays, failed for array of objects
-//var array = JSON.stringify([[1,"kevin",[1,2,3]],[44,34343434,true]])
-
-//passed for simple objects, failed for object of arrays and object of objects
-//var object = JSON.stringify({a:{x:1,y:2}, b:2, c:"Ke vin", d:"john"});
-
-
+//passed(nested objects and arrays inside arrays)
 //var array = JSON.stringify([[1,"kevin",[1,2,3],{x:1,y:2}],[44,34343434,true]])
-//var object = JSON.stringify( {a:{x:1,y:2},b:"kevin",c:{d:{e:"jo hn"}}} );
 
-//only Objects of Arrays need to be fixed
+//passed(nested arrays and objects inside objects)
+//var object = JSON.stringify( {a:[1,2,3,[4,5,6]],b:"kevin",c:{d:{e:"jo hn"}}} );
+
 var parseJSON = function(json) {
   //using the first charCode to determine what type of string json is
   var code = json.charCodeAt()
@@ -48,7 +43,7 @@ var parseJSON = function(json) {
     var count = 0;
     for(var i=0; i<array.length; i++) {
       var n = array[i].charCodeAt();
-      //recursive case for arrays
+      //recursive case for nested arrays inside arrays
       if(n === 91) {
         newArray.push(array[i]);
         for(var x=i+1; x<array.length; x++) {
@@ -74,7 +69,7 @@ var parseJSON = function(json) {
           }
         }
       }
-      //recursive case for array of objects
+      //recursive case for nested objects inside arrays
       else if(n === 123) {
         newArray.push(array[i]);
         for(var x=i+1; x<array.length; x++) {
@@ -133,7 +128,7 @@ var parseJSON = function(json) {
     for(var i=0; i<string.length; i++) {
       var n = string[i].charCodeAt();
       var current = string[i];
-      //recursive case for objects, make sure to reset value
+      //recursive case for nested objects inside objects
       if(n === 123) {
         value += current;
         for(var x=i+1; x<string.length; x++) {
@@ -149,6 +144,37 @@ var parseJSON = function(json) {
           }
           //if "}" AND 0 => ends, change i, end x-loop
           else if (string[x].charCodeAt() === 125 && count === 0) {
+            value += string[x];
+            value = parseJSON(value);
+            object[key] = value;
+            key = '';
+            value = '';
+            isKey = 'yes';
+            i = x+1;
+            x = string.length;
+          }
+          //else, just add
+          else if (string[x].charCodeAt() !== 125) {
+            value += string[x];
+          }
+        }
+      }
+      //recursive case for nested arrays inside objects
+      else if(n === 91) {
+        value += current;
+        for(var x=i+1; x<string.length; x++) {
+          // if "{" => getting far from equal
+          if (string[x].charCodeAt() === 91) {
+            value += string[x];
+            count++;
+          }
+          // if "}" AND not 0 => getting close to equal
+          else if (string[x].charCodeAt() === 93 && count !== 0) {
+            value += string[x];
+            count--;
+          }
+          //if "}" AND 0 => ends, change i, end x-loop
+          else if (string[x].charCodeAt() === 93 && count === 0) {
             value += string[x];
             value = parseJSON(value);
             object[key] = value;
@@ -195,6 +221,3 @@ var parseJSON = function(json) {
     return undefined;
   }
 };
-
-var output = parseJSON(object);
-console.log(output);
