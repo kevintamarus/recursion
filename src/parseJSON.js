@@ -124,3 +124,15 @@ var parseJSON = function(json) {
     return undefined;
   }
 };
+
+
+//checks object syntax, delete this if object is not used
+var isSyntax = function(string) {
+  var n = string.charCodeAt();
+  if(n === 91 || n === 44 || n === 93 || n === 123 || n === 125 || n === 58) {
+    return true;
+  }
+  else{
+    return false;
+  }
+}; 
