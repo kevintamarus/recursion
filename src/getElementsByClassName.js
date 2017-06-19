@@ -8,11 +8,11 @@ var getElementsByClassName = function(className) {
   var documentBody = document.body;
   var finalArray = [];
   var search = function(node) {
-    if(node.classList.contains(className)) {
+    if(node.classList && node.classList.contains(className)) {
       finalArray.push(node);
     }
     node = node.firstChild;
-    while(node === true) {
+    while(node) {
       search(node);
       node = node.nextSibling;
     }
