@@ -1,16 +1,26 @@
-// this is what you would do if you were one to do things the easy way:
-// var parseJSON = JSON.parse;
+//Manual tests:
+/*
+var string = JSON.stringify("john")
+var boolean = JSON.stringify(false)
+var nullValue = JSON.stringify(null)
+var number = JSON.stringify(483785)
+var array = JSON.stringify([12,"john", true, "Ke vin", false, 3])
+var object = JSON.stringify({a:1, b:"john", c:"Ke vin", d:isSyntax})
+*/
 
-// but you're not, so you'll write it from scratch:
 var parseJSON = function(json) {
   var code = json.charCodeAt()
   //string
   if(code === 34) {
     return json.slice(1, json.length-1);
   }
-  //boolean
-  if(code === 116 || code === 102) {
-    return Boolean(json);
+  //boolean true
+  if(code === 116) {
+    return true;
+  }
+  //boolean false
+  if(code === 102) {
+    return false;
   }
   //null
   if(code === 110) {
@@ -22,7 +32,7 @@ var parseJSON = function(json) {
   }
   //array
   if(code === 91) {
-    var array = json.split('')
+    var array = json.split('');
     var newArray = [];
     for(var i=0; i<array.length-1; i++) {
       var value = array[i];
@@ -42,17 +52,41 @@ var parseJSON = function(json) {
     }).reverse();
   }
   //object
-  
+  if(code === 123) {
+    var array = json.split('');
+    var newArray = [];
+    var object = {};
+    for(var i=0; i<array.length-1; i++) {
+      var value = array[i];
+      var previous = array[i-1];
+      var next = array[i+1];
+      if(isSyntax(value) === false) {
+        if(isSyntax(previous)===true) {
+          newArray.unshift(value);
+        }
+        else if(isSyntax(previous) === false) {
+          newArray[0] += (value);
+        }
+      }
+    }
+    var objectArray = newArray.map(function(x) {
+      return parseJSON(x)
+    }).reverse();
+    for(var i=0; i<objectArray.length; i=i+2) {
+      object[objectArray[i]] = objectArray[i+1];
+    }
+    return object;
+  }
   //undefined - change to else?
   else {
     return undefined;
   }
 };
 
-//helper function to check array syntax
+//checks array/object syntax
 var isSyntax = function(string) {
   var n = string.charCodeAt();
-  if(n === 91 || n === 44 || n === 93) {
+  if(n === 91 || n === 44 || n === 93 || n === 123 || n === 125 || n === 58) {
     return true;
   }
   else{
