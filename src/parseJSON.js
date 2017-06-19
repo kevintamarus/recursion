@@ -12,7 +12,10 @@
 //var object = JSON.stringify({a:{x:1,y:2}, b:2, c:"Ke vin", d:"john"});
 
 
-//only objects section need to be fixed
+//var array = JSON.stringify([[1,"kevin",[1,2,3],{x:1,y:2}],[44,34343434,true]])
+//var object = JSON.stringify( {a:{x:1,y:2},b:"kevin",c:{d:{e:"jo hn"}}} );
+
+//only Objects of Arrays need to be fixed
 var parseJSON = function(json) {
   //using the first charCode to determine what type of string json is
   var code = json.charCodeAt()
@@ -71,6 +74,32 @@ var parseJSON = function(json) {
           }
         }
       }
+      //recursive case for array of objects
+      else if(n === 123) {
+        newArray.push(array[i]);
+        for(var x=i+1; x<array.length; x++) {
+          // if "[ " => getting far from equal
+          if (array[x].charCodeAt() === 123) {
+            newArray[newArray.length-1] += array[x];
+            count++;
+          }
+          // if "]" AND not 0 => getting close to equal
+          else if (array[x].charCodeAt() === 125 && count !== 0) {
+            newArray[newArray.length-1] += array[x];
+            count--;
+          }
+          //if "]" AND 0 => ends, change i, end x-loop
+          else if (array[x].charCodeAt() === 125 && count === 0) {
+            newArray[newArray.length-1] += array[x];
+            i = x;
+            x = array.length;
+          }
+          //else, just add
+          else if (array[x].charCodeAt() !== 125) {
+            newArray[newArray.length-1] += array[x];
+          }
+        }
+      }
       //base case for arrays
       else {
         //if not "," AND concat = 'OFF' => then push value to newArray, turn concat 'ON'
@@ -100,29 +129,63 @@ var parseJSON = function(json) {
     var key = '';
     var value = '';
     var isKey = 'yes';
+    var count = 0;
     for(var i=0; i<string.length; i++) {
       var n = string[i].charCodeAt();
       var current = string[i];
-      //base case for objects
-      //before the ":"
-      if (n !== 58 && isKey === 'yes') {
-        key += current;
-      }
-      else if (n === 58 && isKey === 'yes') {
-        key = parseJSON(key);
-        object[key] = 0;
-        isKey = 'no';
-      }
-      //after the ":", before the ","
-      else if (n !== 44 && isKey ==='no') {
+      //recursive case for objects, make sure to reset value
+      if(n === 123) {
         value += current;
+        for(var x=i+1; x<string.length; x++) {
+          // if "{" => getting far from equal
+          if (string[x].charCodeAt() === 123) {
+            value += string[x];
+            count++;
+          }
+          // if "}" AND not 0 => getting close to equal
+          else if (string[x].charCodeAt() === 125 && count !== 0) {
+            value += string[x];
+            count--;
+          }
+          //if "}" AND 0 => ends, change i, end x-loop
+          else if (string[x].charCodeAt() === 125 && count === 0) {
+            value += string[x];
+            value = parseJSON(value);
+            object[key] = value;
+            key = '';
+            value = '';
+            isKey = 'yes';
+            i = x+1;
+            x = string.length;
+          }
+          //else, just add
+          else if (string[x].charCodeAt() !== 125) {
+            value += string[x];
+          }
+        }
       }
-      else if (n === 44 && isKey ==='no') {
-        value = parseJSON(value);
-        object[key] = value;
-        key = '';
-        value = '';
-        isKey = 'yes';
+      //base case for objects
+      else {
+        //before the ":"
+        if (n !== 58 && isKey === 'yes') {
+        key += current;
+        }
+        else if (n === 58 && isKey === 'yes') {
+          key = parseJSON(key);
+          object[key] = 0;
+          isKey = 'no';
+        }
+        //after the ":", before the ","
+        else if (n !== 44 && isKey ==='no') {
+          value += current;
+        }
+        else if (n === 44 && isKey ==='no') {
+          value = parseJSON(value);
+          object[key] = value;
+          key = '';
+          value = '';
+          isKey = 'yes';
+        }
       }
     }
     return object;
@@ -131,4 +194,7 @@ var parseJSON = function(json) {
   else {
     return undefined;
   }
-}; 
+};
+
+var output = parseJSON(object);
+console.log(output);
