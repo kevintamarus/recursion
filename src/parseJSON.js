@@ -11,6 +11,9 @@
 //passed(nested arrays and objects inside objects)
 //var object = JSON.stringify( {a:[1,2,3,[4,5,6]],b:"kevin",c:{d:{e:"jo hn"}}} );
 
+
+//parsing a function string(undefined) will throw a different error
+//how can I program the function to throw a syntax error?
 var parseJSON = function(json) {
   //using the first charCode to determine what type of string json is
   var code = json.charCodeAt()
