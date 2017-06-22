@@ -46,7 +46,7 @@ var parseJSON = function(json) {
     var string = json.slice(1, json.length-1) + ',';
     var value = '';
     var current = '';
-    var newArray = [];
+    var array = [];
     var count = 0;
     for(var i=0; i<string.length; i++) {
       var current = string[i];
@@ -70,7 +70,7 @@ var parseJSON = function(json) {
           //if "]" AND 0 => ends, change i, end x-loop
           else if (n === 93 && count === 0) {
             value += current;
-            newArray.push(parseJSON(value));
+            array.push(parseJSON(value));
             value = '';
             i = x+1;
             x = string.length; //ends x loop
@@ -100,7 +100,7 @@ var parseJSON = function(json) {
           //if "}" AND 0 => ends, change i, end x-loop
           else if (n === 125 && count === 0) {
             value += current;
-            newArray.push(parseJSON(value));
+            array.push(parseJSON(value));
             value = '';
             i = x+1;
             x = string.length;
@@ -113,23 +113,19 @@ var parseJSON = function(json) {
       }
       //base case for arrays
       else {
-        //if not "," AND concat = 'OFF' => then push value to newArray, turn concat 'ON'
+        //if not "," -> add to value
         if (n !== 44) {
           value += current;
         }
-        //if not "," AND concat = 'ON' => then concat to last value of newArray
-        else if(n !== 44) {
-          value += current;
-        }
         //if "," => parse the last value using recursion
-        else if(n === 44) {
-          newArray.push(parseJSON(value));
+        else {
+          array.push(parseJSON(value));
           value = '';
           current= '';
         }
       }
     }
-    return newArray;
+    return array;
   }
   //object test - code 123 is '{'
   if(code === 123) {
