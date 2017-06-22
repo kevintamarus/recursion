@@ -6,13 +6,13 @@
 //passed -- var number = JSON.stringify(483785)
 
 //passed(nested objects and arrays inside arrays)
-//var array = JSON.stringify([[1,"kevin",[1,2,3],{x:1,y:2}],[44,34343434,true]])
+var arrayTest = JSON.stringify([[1,"kevin",[1,2,3],{x:1,y:2}],[44,34343434,true]])
 
 //passed(nested arrays and objects inside objects)
-//var object = JSON.stringify( {a:[1,2,3,[4,5,6]],b:"kevin",c:{d:{e:"jo hn"}}} );
+var objectTest = JSON.stringify( {a:[1,2,3,[4,5,6]],b:"kevin",c:{d:{e:"jo hn"}}} );
 
 //passed(nested object in array in object)
-//var object = JSON.stringify( {a:[1,2,3,{starbucks:"coffee bean"}],b:"kevin",c:{d:{e:"jo hn"}}} );
+var objectTest2 = JSON.stringify( {a:[1,2,3,{starbucks:"coffee bean"}],b:"kevin",c:{d:{e:"jo hn"}}} );
 
 
 //parsing a function string(undefined) will throw a different error
@@ -51,7 +51,7 @@ var parseJSON = function(json) {
     for(var i=0; i<string.length; i++) {
       var current = string[i];
       var n = string[i].charCodeAt();
-      //recursive case for nested arrays inside arrays
+      //step case for nested arrays inside arrays
       if(n === 91) {
         value += current;
         for(var x=i+1; x<string.length; x++) {
@@ -81,7 +81,7 @@ var parseJSON = function(json) {
           }
         }
       }
-      //recursive case for nested objects inside arrays
+      //step case for nested objects inside arrays
       else if(n === 123) {
         value += current;
         for(var x=i+1; x<string.length; x++) {
@@ -142,7 +142,7 @@ var parseJSON = function(json) {
     for(var i=0; i<string.length; i++) {
       var current = string[i];
       var n = current.charCodeAt();
-      //recursive case for nested objects inside objects
+      //step case for nested objects inside objects
       if(n === 123) {
         value += current;
         for(var x=i+1; x<string.length; x++) {
@@ -175,7 +175,7 @@ var parseJSON = function(json) {
           }
         }
       }
-      //recursive case for nested arrays inside objects
+      //step case for nested arrays inside objects
       else if(n === 91) {
         value += current;
         for(var x=i+1; x<string.length; x++) {
@@ -239,8 +239,6 @@ var parseJSON = function(json) {
   }
 };
 
-//console.log(parseJSON(object));
-//console.log(JSON.stringify(object))
-debugger;
-var output = parseJSON(array);
-console.log(output);
+console.log(parseJSON(arrayTest));
+console.log(parseJSON(objectTest));
+console.log(parseJSON(objectTest2));
