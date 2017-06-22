@@ -11,8 +11,8 @@
 //passed(nested arrays and objects inside objects)
 //var object = JSON.stringify( {a:[1,2,3,[4,5,6]],b:"kevin",c:{d:{e:"jo hn"}}} );
 
-//failed(nested object in array in object), missing 1 string char -> "coffee bea"
-var object = JSON.stringify( {a:[1,2,3,{starbucks:"coffee bean"}],b:"kevin",c:{d:{e:"jo hn"}}} );
+//passed(nested object in array in object)
+//var object = JSON.stringify( {a:[1,2,3,{starbucks:"coffee bean"}],b:"kevin",c:{d:{e:"jo hn"}}} );
 
 
 //parsing a function string(undefined) will throw a different error
@@ -76,7 +76,7 @@ var parseJSON = function(json) {
             x = string.length; //ends x loop
           }
           //else, just add
-          else if (n !== 93) {
+          else {
             value += current;
           }
         }
@@ -170,7 +170,7 @@ var parseJSON = function(json) {
             x = string.length;
           }
           //else, just add
-          else if (n !== 125) {
+          else {
             value += current;
           }
         }
@@ -202,7 +202,7 @@ var parseJSON = function(json) {
             x = string.length;
           }
           //else, just add
-          else if (n !== 125) {
+          else {
             value += current;
           }
         }
@@ -241,5 +241,6 @@ var parseJSON = function(json) {
 
 //console.log(parseJSON(object));
 //console.log(JSON.stringify(object))
-
-console.log(parseJSON(object) );
+debugger;
+var output = parseJSON(array);
+console.log(output);
